@@ -22,6 +22,14 @@ class CustomTheme {
     //1
     return ThemeData(
         //2
+        snackBarTheme: const SnackBarThemeData(
+          backgroundColor: Colors.blueGrey,
+          contentTextStyle: TextStyle(
+            color: Colors.white,
+            fontSize: 18
+          ),
+
+          ),
         primarySwatch: Colors.red,
         scaffoldBackgroundColor: const Color(0xff1e1f26),
         cardColor: const Color.fromARGB(150, 173, 32, 32),
@@ -43,5 +51,7 @@ class CustomTheme {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(18.0)),
           buttonColor: Colors.purpleAccent,
         ));
+
+        
   }
 }

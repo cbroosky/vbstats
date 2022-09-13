@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:vbstat/playedGames.dart';
 import 'lineups.dart';
 import "game.dart";
 import 'players.dart';
@@ -88,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const GamePage()));
+                          builder: (context) => const PlayedGamesPage()));
                 },
               ),
             ),

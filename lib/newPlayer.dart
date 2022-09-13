@@ -29,7 +29,9 @@ class NewPlayerPageState extends State<NewPlayerPage> {
         name: nameController.text,
         number: int.tryParse(numberController.text) ?? 999,
         position: positionSelection,
-        team: teamNames[teamSelection]);
+        team: teamNames[teamSelection]
+        );
+    // print("New Player: " + newPlayer.toString());
     dbHelper().newPlayer(newPlayer);
   }
 
@@ -70,7 +72,6 @@ class NewPlayerPageState extends State<NewPlayerPage> {
                     width: 150,
                     height: 30,
                     child: TextField(
-                      
                       controller: nameController,
                       autofocus: true,
                       decoration:
@@ -185,11 +186,11 @@ class NewPlayerPageState extends State<NewPlayerPage> {
                   children: [
                     DropdownButton<int>(
                       value: teamSelection,
-                      items: const [
-                        DropdownMenuItem(child: Text("Varsity"), value: 0),
+                      items: [
+                        DropdownMenuItem(child: const Text("Varsity"), value: 0),
                         DropdownMenuItem(
-                            child: Text("Junior Varsity"), value: 1),
-                        DropdownMenuItem(child: Text("C Team"), value: 2),
+                            child: const Text("Junior Varsity"), value: 1),
+                        DropdownMenuItem(child: const Text("C Team"), value: 2),
                       ],
                       onChanged: (selection) => {
                         setState(() => {teamSelection = selection ?? 0})
@@ -219,7 +220,7 @@ class NewPlayerPageState extends State<NewPlayerPage> {
                       MaterialPageRoute(
                           builder: (context) => const PlayerPage()));
                 },
-                child: Text("Save"))
+                child: const Text("Save"))
           ]),
         )));
   }

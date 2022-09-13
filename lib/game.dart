@@ -29,13 +29,7 @@ class GamePageState extends State<GamePage> {
                     MaterialPageRoute(
                         builder: (context) => const MyHomePage(title: "Home")));
               }),
-        actions: [
-        IconButton(
-            onPressed: () {
-              saveGame();
-            },
-            icon: const Icon(Icons.save))
-      ]),
+        ),
     );
   }
 }

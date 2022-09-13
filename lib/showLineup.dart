@@ -45,7 +45,7 @@ class ShowLineupState extends State<ShowLineupPage> {
     showDialog(context: context, builder: (BuildContext context) => alert);
   }
 
-  void showLine() {
+  void showLineup() {
     List<Player> players = [];
     dbHelper().getLineupPlayers(widget.lineup.id).then((value) {
       List<Player> players = value;
@@ -57,7 +57,7 @@ class ShowLineupState extends State<ShowLineupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Lineup | " + widget.lineup.name),
+          title: Text("Lineup | ${widget.lineup.name}"),
           leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
@@ -100,14 +100,23 @@ class ShowLineupState extends State<ShowLineupPage> {
                                               player: snapshot.data![index])));
                                 },
                                 title: Text(
-                                  snapshot.data![index].name,
-                                  style: const TextStyle(fontSize: 20),
+                                  "#${snapshot.data![index].number.toString()} | ${snapshot.data![index].name}",style: const TextStyle(fontFeatures: [
+                                    FontFeature.tabularFigures()
+                                  ], fontSize: 20),
+                                  
                                 ),
                                 subtitle: Text(snapshot.data![index].team,
                                     style: const TextStyle(fontSize: 20)),
-                                leading: Text(
-                                    snapshot.data![index].number.toString(),
-                                    style: const TextStyle(fontSize: 18)),
+                                leading: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                        index < 6
+                                            ? (index + 1).toString()
+                                            : "Sub",
+                                        style: const TextStyle(fontSize: 18)),
+                                  ],
+                                ),
                                 trailing: Text(snapshot.data![index].position,
                                     style: const TextStyle(fontSize: 20))),
                           );

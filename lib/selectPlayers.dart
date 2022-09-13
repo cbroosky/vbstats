@@ -24,7 +24,6 @@ class SelectPlayersState extends State<SelectPlayersPage> {
     }
     Lineup newLineup = Lineup(id: lineupID, name: widget.name);
     dbHelper().newLineup(newLineup);
-    print(dbHelper().getLineupPlayers(newLineup.id));
   }
 
   @override
@@ -39,11 +38,14 @@ class SelectPlayersState extends State<SelectPlayersPage> {
             }),
         appBar: AppBar(title: const Text("Select Players")),
         body:
+        
             // Row(
             //   children: [
             Column(
           children: [
-            FutureBuilder<List>(
+            Expanded(
+              flex: 1,
+              child: FutureBuilder<List>(
               future: dbHelper().getPlayers(),
               builder: (context, snapshot) {
                 if (snapshot.data != null && snapshot.data!.isNotEmpty) {
@@ -67,10 +69,10 @@ class SelectPlayersState extends State<SelectPlayersPage> {
                                 }
 
                                 setState(() {
-                                  print(selected);
                                 });
                               },
-                              // leading: Text(snapshot.data![index].team),
+                              leading: selected
+                                    .contains(snapshot.data![index].id) ? selected.toList().indexOf(snapshot.data![index].id) < 6 ? Text((selected.toList().indexOf(snapshot.data![index].id)+1).toString()): const Text("Sub"): const Text(""),
                               title: Text(snapshot.data![index].name,
                                   style: const TextStyle(fontSize: 24)),
                               trailing: Text(snapshot.data![index].position)),
@@ -88,7 +90,8 @@ class SelectPlayersState extends State<SelectPlayersPage> {
                   );
                 }
               },
-            ),
+            ),)
+            
           ],
           //   )
           // ],

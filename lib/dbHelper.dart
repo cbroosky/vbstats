@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -15,12 +17,16 @@ class dbHelper {
       onCreate: ((db, version) async {
         print("Creating Tables!");
         await db.execute(
-            "CREATE TABLE players(id TEXT, name TEXT PRIMARY KEY, number INTEGER, position STRING, team STRING, goodServes INTEGER, badServes INTEGER, aces INTEGER, assists INTEGER, spikes INTEGER, tips INTEGER, digs INTEGER); ");
+            "CREATE TABLE players(id TEXT PRIMARY KEY, name TEXT, number INTEGER, position STRING, team STRING, serveAtt INTEGER, serveErr INTEGER, aces INTEGER, dig INTEGER, digErr INTEGER, pass INTEGER, passErr INTEGER, killAtt INTEGER, kill INTEGER, killErr INTEGER, assists INTEGER, assistsErr INTEGER, blockAtt INTEGER, block INTEGER, blockErr INTEGER); ");
         print("Created Player Table!");
 
         await db.execute(
-            "CREATE TABLE gameStats(gameID TEXT PRIMARY KEY, name TEXT, teamPoints INTEGER, oppPoints INTEGER, playerID INTEGER, playerNumber INTEGER, position STRING, goodServes INTEGER, badServes INTEGER, aces INTEGER, assists INTEGER, spikes INTEGER, tips INTEGER, digs INTEGER); ");
+            "CREATE TABLE gameStats(gameID TEXT, playerID INTEGER, playerNumber INTEGER, position STRING, serveAtt INTEGER, serveErr INTEGER, aces INTEGER, dig INTEGER, digErr INTEGER, pass INTEGER, passErr INTEGER, killAtt INTEGER, kill INTEGER, killErr INTEGER, assists INTEGER, assistsErr INTEGER, blockAtt INTEGER, block INTEGER, blockErr INTEGER); ");
         print("Created GameStats Table!");
+
+        await db.execute(
+            "CREATE TABLE games(id TEXT, name TEXT, date DATE, teamPoints INTEGER, oppPoints INTEGER); ");
+        print("Created Games Table!");
 
         await db
             .execute("CREATE TABLE lineups(id TEXT, name TEXT PRIMARY KEY);");
@@ -58,6 +64,7 @@ class dbHelper {
 
   Future<void> newPlayer(Player player) async {
     final db = await initialize();
+    // print("Saving new player");
     await db.insert("players", player.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
@@ -65,6 +72,12 @@ class dbHelper {
   Future<void> newGameStats(GameStats gameStats) async {
     final db = await initialize();
     await db.insert("gameStats", gameStats.toMap(),
+        conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> newGame(Game game) async {
+    final db = await initialize();
+    await db.insert("game", game.toMap(),
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
@@ -82,20 +95,34 @@ class dbHelper {
 
   Future<List<Player>> getPlayers() async {
     final db = await initialize();
-    final List<Map<String, dynamic>> maps = await db.query("players");
+    final List<Map<String, dynamic>> maps =
+        await db.rawQuery("SELECT * FROM players");
+    // print(maps);
+    int padLength = 10;
     return List.generate(maps.length, (i) {
-      return Player(
+
+      Player player = Player(
           id: maps[i]["id"],
           name: maps[i]["name"],
           number: maps[i]["number"],
           position: maps[i]["position"],
           team: maps[i]["team"],
-          goodServes: maps[i]["goodServes"],
-          badServes: maps[i]["badServes"],
+          serveAtt: maps[i]["serveAtt"],
+          serveErr: maps[i]["serveErr"],
           aces: maps[i]["aces"],
+          dig: maps[i]["dig"],
+          digErr: maps[i]["digErr"],
+          pass: maps[i]["pass"],
+          passErr: maps[i]["passErr"],
+          killAtt: maps[i]["killAtt"],
+          kill: maps[i]["kill"],
+          killErr: maps[i]["killErr"],
           assists: maps[i]["assists"],
-          spikes: maps[i]["spikes"],
-          tips: maps[i]["tips"]);
+          assistErr: maps[i]["assistsErr"],
+          blockAtt: maps[i]["blockAtt"],
+          block: maps[i]["block"],
+          blockErr: maps[i]["blockErr"]);
+      return player;
     });
   }
 
@@ -110,56 +137,92 @@ class dbHelper {
           number: maps[i]["number"],
           position: maps[i]["position"],
           team: maps[i]["team"],
-          goodServes: maps[i]["goodServes"],
-          badServes: maps[i]["badServes"],
+          serveAtt: maps[i]["serveAtt"],
+          serveErr: maps[i]["serveErr"],
           aces: maps[i]["aces"],
+          dig: maps[i]["dig"],
+          digErr: maps[i]["digErr"],
+          pass: maps[i]["pass"],
+          passErr: maps[i]["passErr"],
+          killAtt: maps[i]["killAtt"],
+          kill: maps[i]["kill"],
+          killErr: maps[i]["killErr"],
           assists: maps[i]["assists"],
-          spikes: maps[i]["spikes"],
-          tips: maps[i]["tips"]);
+          assistErr: maps[i]["assistsErr"],
+          blockAtt: maps[i]["blockAtt"],
+          block: maps[i]["block"],
+          blockErr: maps[i]["blockErr"]);
     });
     return playerList[0];
   }
 
-  Future<List<GameStats>> getGameStats() async {
+  Future<List<GameStats>> getGameStats(String gameID) async {
     final db = await initialize();
-    final List<Map<String, dynamic>> maps = await db.query("gameStats");
+    final List<Map<String, dynamic>> maps =
+        await db.query("gameStats", where: "gameID = ?", whereArgs: [gameID]);
     return List.generate(maps.length, (i) {
       return GameStats(
           gameID: maps[i]["gameID"],
           playerID: maps[i]["playerID"],
-          name: maps[i]["name"],
-          teamPoints: maps[i]["teamPoints"],
-          oppPoints: maps[i]["oppPoints"],
-          goodServes: maps[i]["goodServes"],
-          badServes: maps[i]["badServes"],
+          serveAtt: maps[i]["serveAtt"],
+          serveErr: maps[i]["serveErr"],
           aces: maps[i]["aces"],
+          dig: maps[i]["dig"],
+          digErr: maps[i]["digErr"],
+          pass: maps[i]["pass"],
+          passErr: maps[i]["passErr"],
+          killAtt: maps[i]["killAtt"],
+          kill: maps[i]["kill"],
+          killErr: maps[i]["killErr"],
           assists: maps[i]["assists"],
-          spikes: maps[i]["spikes"],
-          tips: maps[i]["tips"],
-          digs: maps[i]["digs"]);
+          assistErr: maps[i]["assistsErr"],
+          blockAtt: maps[i]["blockAtt"],
+          block: maps[i]["block"],
+          blockErr: maps[i]["blockErr"]);
+    });
+  }
+
+  Future<List<Game>> getGames() async {
+    final db = await initialize();
+    final List<Map<String, dynamic>> maps = await db.query("games");
+    return List.generate(maps.length, (i) {
+      return Game(
+        id: maps[i]["id"],
+        name: maps[i]["name"],
+        date: maps[i]["date"],
+        teamScore: maps[i]["teamScore"],
+        oppScore: maps[i]["oppScore"],
+      );
     });
   }
 
   Future<List<Player>> getLineupPlayers(String lineupID) async {
     final db = await initialize();
     final List<Map<String, dynamic>> maps = await db.rawQuery(
-        "SELECT * FROM lineupEntries INNER JOIN players ON lineupEntries.playerID = players.id WHERE lineupEntries.lineupID = \"$lineupID\"");
+        "SELECT * FROM lineupEntries INNER JOIN players ON lineupEntries.playerID = players.id WHERE lineupEntries.lineupID = \"$lineupID\" ORDER BY rotation ASC");
 
     return List.generate(maps.length, (i) {
       return Player(
-        id: maps[i]["id"],
-        name: maps[i]["name"],
-        number: maps[i]["number"],
-        position: maps[i]["position"],
-        team: maps[i]["team"],
-        goodServes: maps[i]["goodServes"],
-        badServes: maps[i]["badServes"],
-        aces: maps[i]["aces"],
-        assists: maps[i]["assists"],
-        spikes: maps[i]["spikes"],
-        tips: maps[i]["tips"],
-        digs: maps[i]["digs"]
-      );
+          id: maps[i]["id"],
+          name: maps[i]["name"],
+          number: maps[i]["number"],
+          position: maps[i]["position"],
+          team: maps[i]["team"],
+          serveAtt: maps[i]["serveAtt"],
+          serveErr: maps[i]["serveErr"],
+          aces: maps[i]["aces"],
+          dig: maps[i]["dig"],
+          digErr: maps[i]["digErr"],
+          pass: maps[i]["pass"],
+          passErr: maps[i]["passErr"],
+          killAtt: maps[i]["killAtt"],
+          kill: maps[i]["kill"],
+          killErr: maps[i]["killErr"],
+          assists: maps[i]["assists"],
+          assistErr: maps[i]["assistsErr"],
+          blockAtt: maps[i]["blockAtt"],
+          block: maps[i]["block"],
+          blockErr: maps[i]["blockErr"]);
     });
     // final List<Map<String, dynamic>> maps = await db.rawQuery(
     //     "SELECT * from rosters WHERE playerID IN (SELECT MIN(playerID) FROM rosters GROUP BY name);");
@@ -176,6 +239,13 @@ class dbHelper {
     return List.generate(maps.length, (i) {
       return Lineup(id: maps[i]["id"], name: maps[i]["name"]);
     });
+  }
+  Future<Lineup> getLineup(String id) async {
+    final db = await initialize();
+    final List<Map<String, dynamic>> maps = await db.query("lineups", where: "id = ?", whereArgs: [id]);
+    return List.generate(maps.length, (i) {
+      return Lineup(id: maps[i]["id"], name: maps[i]["name"]);
+    })[0];
   }
 
   Future<void> deletePlayer(String id) async {

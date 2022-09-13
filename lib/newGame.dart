@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:vbstat/dbHelper.dart';
 
-int teamSelection = 0;
+import 'databaseClasses.dart';
+import 'inGame.dart';
+
+String lineupSelection = "Select Lineup";
 
 class NewGamePage extends StatefulWidget {
   const NewGamePage({Key? key}) : super(key: key);
@@ -21,7 +25,7 @@ class NewGameState extends State<NewGamePage> {
             child: SingleChildScrollView(
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             const Text(
-              "Player Data",
+              "Game Info",
               style: TextStyle(
                   fontSize: 36,
                   fontWeight: FontWeight.bold,
@@ -29,7 +33,7 @@ class NewGameState extends State<NewGamePage> {
             ),
             const Padding(padding: EdgeInsets.only(top: 50)),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
@@ -43,32 +47,54 @@ class NewGameState extends State<NewGamePage> {
                   child: TextField(
                     controller: nameController,
                     autofocus: true,
-                    decoration: const InputDecoration(hintText: "Player Name"),
+                    decoration: const InputDecoration(hintText: "Game Name"),
                   ),
                 )
               ],
             ),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Padding(padding: EdgeInsets.only(top: 15)),
                 const Text(
-                  "Team",
+                  "Lineup Set 1",
                   style: TextStyle(fontSize: 20),
                 ),
                 const Padding(padding: EdgeInsets.only(left: 15)),
-                DropdownButton<int>(
-                  value: teamSelection,
-                  items: const [
-                    DropdownMenuItem(child: Text("Varsity"), value: 0),
-                    DropdownMenuItem(child: Text("Junior Varsity"), value: 1),
-                    DropdownMenuItem(child: Text("C Team"), value: 2),
-                  ],
-                  onChanged: (selection) => {
-                    setState(() => {teamSelection = selection ?? 0})
-                  },
-                )
+                FutureBuilder<List<Lineup>>(
+                    future: dbHelper().getLineups(),
+                    builder: (context, snapshot) {
+                      if (snapshot.data != null && snapshot.hasData) {
+                        return DropdownButton<String>(
+                            value: lineupSelection,
+                            items: [
+                                  const DropdownMenuItem<String>(
+                                      value: "Select Lineup",
+                                      child: Text("Select Lineup"))
+                                ] +
+                                snapshot.data!
+                                    .map((lineup) => DropdownMenuItem<String>(
+                                        value: lineup.id,
+                                        child: Text(lineup.name)))
+                                    .toList(),
+                            onChanged: (value) {
+                              setState(() {
+                                lineupSelection = value!;
+                              });
+                            });
+                      } else {
+                        return Center(
+                          child: AlertDialog(
+                            backgroundColor: const Color(0x997a7a7a),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            content: const Text(
+                                "There are no lineups available, try adding a new one!"),
+                          ),
+                        );
+                      }
+                    })
                 // SizedBox(
                 //   width: 150,
                 //   height: 30,
@@ -81,13 +107,20 @@ class NewGameState extends State<NewGamePage> {
               ],
             ),
             ElevatedButton(
-                onPressed: () {
-                  // Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //         builder: (context) => const InGamePage()));
+                onPressed: () async {
+                  DateTime now = DateTime.now();
+                  DateTime date = DateTime(now.year, now.month, now.day);
+                  Game newGame = Game(
+                      id: lineupSelection,
+                      name: nameController.text,
+                      date: date);
+
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => InGamePage(game: newGame,)));
                 },
-                child: Text("Save"))
+                child: const Text("Save"))
           ]),
         )));
   }

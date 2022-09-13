@@ -6,32 +6,73 @@ class Player {
   int number;
   String position;
   String team;
-  int goodServes;
-  int badServes;
-  int aces;
-  int assists;
-  int spikes;
-  int tips;
-  int digs;
 
-  Player({
-    required this.id,
-    required this.name,
-    required this.number,
-    required this.position,
-    required this.team,
-    this.goodServes = 0,
-    this.badServes = 0,
-    this.aces = 0,
-    this.assists = 0,
-    this.spikes = 0,
-    this.tips = 0,
-    this.digs = 0,
-  });
+  int serveAtt;
+  int aces;
+  int serveErr;
+
+  int pass;
+  int passErr;
+
+  int dig;
+  int digErr;
+
+  int killAtt;
+  int kill;
+  int killErr;
+
+  int assists;
+  int assistErr;
+
+  int blockAtt;
+  int block;
+  int blockErr;
+
+  Player(
+      {required this.id,
+      required this.name,
+      required this.number,
+      required this.position,
+      required this.team,
+      this.serveAtt = 0,
+      this.serveErr = 0,
+      this.aces = 0,
+      this.pass = 0,
+      this.passErr = 0,
+      this.dig = 0,
+      this.digErr = 0,
+      this.killAtt = 0,
+      this.kill = 0,
+      this.killErr = 0,
+      this.assists = 0,
+      this.assistErr = 0,
+      this.blockAtt = 0,
+      this.block = 0,
+      this.blockErr = 0});
 
   @override
   String toString() {
-    return "ID: $id, \nName: $name, \nNumber: $number, \nPosition: $position, \nTeam: $team, \nGoodServes: $goodServes, \nBadServes: $badServes, \nAces: $aces, \nAssists: $assists, \nSpikes: $spikes, \nTips: $tips, \nDigs: $digs";
+    return """ID: $id,
+    Name: $name,
+    Number: $number,
+    Position: $position,
+    Team: $team,
+    Serve Attempts: $serveAtt,
+    Serve Errors: $serveErr,
+    Aces: $aces,
+    Digs: $dig,
+    Dig Errors: $digErr,
+    Passes: $pass,
+    Pass Errors: $passErr,
+    Kill Attempts: $killAtt,
+    Kills: $kill,
+    Kill Errors: $killErr,
+    Assists: $assists,
+    Assist Errors: $assistErr,
+    Block Attempts: $blockAtt,
+    Blocks: $block,
+    Block Errors: $blockErr
+    """;
   }
 
   Map<String, dynamic> toMap() {
@@ -41,13 +82,21 @@ class Player {
       'number': number,
       'position': position,
       'team': team,
-      'goodServes': goodServes,
-      'badServes': badServes,
+      'serveAtt': serveAtt,
+      'serveErr': serveErr,
       'aces': aces,
+      'dig': dig,
+      'digErr': digErr,
+      'pass': pass,
+      'passErr': passErr,
+      'killAtt': killAtt,
+      'kill': kill,
+      'killErr': killErr,
       'assists': assists,
-      'spikes': spikes,
-      'tips': tips,
-      'digs': digs
+      'assistsErr': assistErr,
+      'blockAtt': blockAtt,
+      'block': block,
+      'blockErr': blockErr
     };
   }
 }
@@ -62,6 +111,7 @@ class Lineup {
       'name': name,
     };
   }
+
   @override
   String toString() {
     return "ID: $id, \nName: $name";
@@ -83,50 +133,94 @@ class LineupEntry {
       'rotation': rotation,
     };
   }
-  
 }
 
 class GameStats {
   final String gameID;
   final String playerID;
-  final String name;
-  int teamPoints;
-  int oppPoints;
-  int goodServes;
-  int badServes;
+  int serveAtt;
   int aces;
+  int serveErr;
+
+  int pass;
+  int passErr;
+
+  int dig;
+  int digErr;
+
+  int killAtt;
+  int kill;
+  int killErr;
+
   int assists;
-  int spikes;
-  int tips;
-  int digs;
+  int assistErr;
+
+  int blockAtt;
+  int block;
+  int blockErr;
 
   GameStats(
       {required this.gameID,
       required this.playerID,
-      required this.name,
-      required this.teamPoints,
-      required this.oppPoints,
-      this.goodServes = 0,
-      this.badServes = 0,
+      this.serveAtt = 0,
+      this.serveErr = 0,
       this.aces = 0,
+      this.pass = 0,
+      this.passErr = 0,
+      this.dig = 0,
+      this.digErr = 0,
+      this.killAtt = 0,
+      this.kill = 0,
+      this.killErr = 0,
       this.assists = 0,
-      this.spikes = 0,
-      this.tips = 0,
-      this.digs = 0});
+      this.assistErr = 0,
+      this.blockAtt = 0,
+      this.block = 0,
+      this.blockErr = 0});
 
   Map<String, dynamic> toMap() {
     return {
       'playerID': playerID,
-      'name': name,
-      'teamPoints': teamPoints,
-      'oppPoints': oppPoints,
-      'goodServes': goodServes,
-      'badServes': badServes,
+      'serveAtt': serveAtt,
+      'serveErr': serveErr,
       'aces': aces,
+      'dig': dig,
+      'digErr': digErr,
+      'pass': pass,
+      'passErr': passErr,
+      'killAtt': killAtt,
+      'kill': kill,
+      'killErr': killErr,
       'assists': assists,
-      'spikes': spikes,
-      'tips': tips,
-      'digs': digs
+      'assistsErr': assistErr,
+      'blockAtt': blockAtt,
+      'block': block,
+      'blockErr': blockErr
+    };
+  }
+}
+
+class Game {
+  final String id;
+  final String name;
+  final DateTime date;
+  final int teamScore;
+  final int oppScore;
+
+  Game(
+      {required this.id,
+      required this.name,
+      required this.date,
+      this.teamScore = 0,
+      this.oppScore = 0});
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'date': date,
+      'teamScore': teamScore,
+      'oppScore': oppScore,
     };
   }
 }

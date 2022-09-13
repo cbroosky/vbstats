@@ -43,18 +43,22 @@ class ShowPlayerState extends State<ShowPlayerPage> {
           //     }),
         ),
         body: Center(
+            child: SingleChildScrollView(
           child: Column(children: [
-            const Text("Player Stats", style: TextStyle(fontSize: 36),),
+            const Text(
+              "Player Stats",
+              style: TextStyle(fontSize: 36),
+            ),
             const Divider(),
             Card(
                 child: ListTile(
               title: const Text("Good Serves"),
-              trailing: Text(widget.player.goodServes.toString()),
+              trailing: Text(widget.player.serveAtt.toString()),
             )),
             Card(
                 child: ListTile(
               title: const Text("Bad Serves"),
-              trailing: Text(widget.player.badServes.toString()),
+              trailing: Text(widget.player.serveErr.toString()),
             )),
             Card(
                 child: ListTile(
@@ -69,19 +73,19 @@ class ShowPlayerState extends State<ShowPlayerPage> {
             Card(
                 child: ListTile(
               title: const Text("Spikes"),
-              trailing: Text(widget.player.spikes.toString()),
+              trailing: Text(widget.player.killErr.toString()),
             )),
             Card(
                 child: ListTile(
               title: const Text("tips"),
-              trailing: Text(widget.player.tips.toString()),
+              trailing: Text(widget.player.blockAtt.toString()),
             )),
             Card(
                 child: ListTile(
               title: const Text("Digs"),
-              trailing: Text(widget.player.digs.toString()),
+              trailing: Text(widget.player.dig.toString()),
             )),
           ]),
-        ));
+        )));
   }
 }
