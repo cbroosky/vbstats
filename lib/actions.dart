@@ -1,14 +1,19 @@
-import 'package:vbstat/dbHelper.dart';
-
 class StatAction {
   final String name;
   final String column;
-  final bool affectsScore;
+  final int scoreAdjustment;
 
-  StatAction(
-      {required this.name, required this.column, required this.affectsScore});
+  StatAction({required this.name, required this.column, required this.scoreAdjustment});
+}
 
-  void doAction(String playerID) {
+class PlayerStat {
+  final String playerID;
+  final StatAction statAction;
+
+  PlayerStat({required this.playerID, required this.statAction});
+
+  void doAction() {
+    // TODO Add action code
     // dbHelper().addStat(playerID, column);
   }
 }

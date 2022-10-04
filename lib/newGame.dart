@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:vbstat/dbHelper.dart';
 
 import 'databaseClasses.dart';
@@ -26,10 +25,7 @@ class NewGameState extends State<NewGamePage> {
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             const Text(
               "Game Info",
-              style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline),
+              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
             ),
             const Padding(padding: EdgeInsets.only(top: 50)),
             Row(
@@ -63,20 +59,14 @@ class NewGameState extends State<NewGamePage> {
                 ),
                 const Padding(padding: EdgeInsets.only(left: 15)),
                 FutureBuilder<List<Lineup>>(
-                    future: dbHelper().getLineups(),
+                    future: DBHelper().getLineups(),
                     builder: (context, snapshot) {
                       if (snapshot.data != null && snapshot.hasData) {
                         return DropdownButton<String>(
                             value: lineupSelection,
-                            items: [
-                                  const DropdownMenuItem<String>(
-                                      value: "Select Lineup",
-                                      child: Text("Select Lineup"))
-                                ] +
+                            items: [const DropdownMenuItem<String>(value: "Select Lineup", child: Text("Select Lineup"))] +
                                 snapshot.data!
-                                    .map((lineup) => DropdownMenuItem<String>(
-                                        value: lineup.id,
-                                        child: Text(lineup.name)))
+                                    .map((lineup) => DropdownMenuItem<String>(value: lineup.id, child: Text(lineup.name)))
                                     .toList(),
                             onChanged: (value) {
                               setState(() {
@@ -87,10 +77,8 @@ class NewGameState extends State<NewGamePage> {
                         return Center(
                           child: AlertDialog(
                             backgroundColor: const Color(0x997a7a7a),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            content: const Text(
-                                "There are no lineups available, try adding a new one!"),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                            content: const Text("There are no games available, try adding a new one!"),
                           ),
                         );
                       }
@@ -108,17 +96,17 @@ class NewGameState extends State<NewGamePage> {
             ),
             ElevatedButton(
                 onPressed: () async {
-                  DateTime now = DateTime.now();
-                  DateTime date = DateTime(now.year, now.month, now.day);
-                  Game newGame = Game(
-                      id: lineupSelection,
-                      name: nameController.text,
-                      date: date);
+                  // DateTime now = DateTime.now();
+                  // DateTime date = DateTime(now.year, now.month, now.day);
+                  int millisSinceEpoch = DateTime.now().millisecondsSinceEpoch;
+                  Game newGame = Game(id: lineupSelection, name: nameController.text, date: millisSinceEpoch);
 
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => InGamePage(game: newGame,)));
+                          builder: (context) => InGamePage(
+                                game: newGame,
+                              )));
                 },
                 child: const Text("Save"))
           ]),

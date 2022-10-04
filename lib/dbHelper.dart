@@ -7,7 +7,7 @@ import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 import 'databaseClasses.dart';
 
-class dbHelper {
+class DBHelper {
   Future<Database> initialize() async {
     WidgetsFlutterBinding.ensureInitialized();
     String path = join(await getDatabasesPath(), "vbstats.db");
@@ -21,19 +21,16 @@ class dbHelper {
         print("Created Player Table!");
 
         await db.execute(
-            "CREATE TABLE gameStats(gameID TEXT, playerID INTEGER, playerNumber INTEGER, position STRING, serveAtt INTEGER, serveErr INTEGER, aces INTEGER, dig INTEGER, digErr INTEGER, pass INTEGER, passErr INTEGER, killAtt INTEGER, kill INTEGER, killErr INTEGER, assists INTEGER, assistsErr INTEGER, blockAtt INTEGER, block INTEGER, blockErr INTEGER); ");
+            "CREATE TABLE gameStats(gameID TEXT, playerID INTEGER, serveAtt INTEGER, serveErr INTEGER, aces INTEGER, dig INTEGER, digErr INTEGER, pass INTEGER, passErr INTEGER, killAtt INTEGER, kill INTEGER, killErr INTEGER, assists INTEGER, assistsErr INTEGER, blockAtt INTEGER, block INTEGER, blockErr INTEGER); ");
         print("Created GameStats Table!");
 
-        await db.execute(
-            "CREATE TABLE games(id TEXT, name TEXT, date DATE, teamPoints INTEGER, oppPoints INTEGER); ");
+        await db.execute("CREATE TABLE games(id TEXT, name TEXT, date INTEGER, teamPoints INTEGER, oppPoints INTEGER); ");
         print("Created Games Table!");
 
-        await db
-            .execute("CREATE TABLE lineups(id TEXT, name TEXT PRIMARY KEY);");
+        await db.execute("CREATE TABLE lineups(id TEXT, name TEXT PRIMARY KEY);");
         print("Created Roster Table!");
 
-        await db.execute(
-            "CREATE TABLE lineupEntries(lineupID TEXT, playerID TEXT, rotation INTEGER );");
+        await db.execute("CREATE TABLE lineupEntries(lineupID TEXT, playerID TEXT, rotation INTEGER );");
         print("Created Roster Entries Table!");
 
         return;
@@ -49,58 +46,61 @@ class dbHelper {
     String middle4Digits = '';
     String last4alphabets = '';
     for (int i = 0; i < 4; i++) {
-      first4alphabets += ranAssets.smallAlphabets[
-          Random.secure().nextInt(ranAssets.smallAlphabets.length)];
+      first4alphabets += ranAssets.smallAlphabets[Random.secure().nextInt(ranAssets.smallAlphabets.length)];
 
-      middle4Digits +=
-          ranAssets.digits[Random.secure().nextInt(ranAssets.digits.length)];
+      middle4Digits += ranAssets.digits[Random.secure().nextInt(ranAssets.digits.length)];
 
-      last4alphabets += ranAssets.smallAlphabets[
-          Random.secure().nextInt(ranAssets.smallAlphabets.length)];
+      last4alphabets += ranAssets.smallAlphabets[Random.secure().nextInt(ranAssets.smallAlphabets.length)];
     }
 
     return '$first4alphabets-$middle4Digits-$last4alphabets';
   }
 
+  Future<void> alterGameTable() async {
+    final db = await initialize();
+    // print("Saving new player");
+    await db.execute("ALTER TABLE games ALTER COLUMN date INTEGER;");
+  }
+
   Future<void> newPlayer(Player player) async {
     final db = await initialize();
     // print("Saving new player");
-    await db.insert("players", player.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert("players", player.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<void> newGameStats(GameStats gameStats) async {
     final db = await initialize();
-    await db.insert("gameStats", gameStats.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert("gameStats", gameStats.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<void> updateGameStats(GameStats gameStat, String statCol) async {
+    final db = await initialize();
+    await db.rawUpdate(
+        "UPDATE gameStats SET $statCol = $statCol + 1 WHERE playerID = '${gameStat.playerID}' AND gameID = '${gameStat.gameID}';");
+    // await db.insert("gameStats", gameStat.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<void> newGame(Game game) async {
     final db = await initialize();
-    await db.insert("game", game.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert("games", game.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<void> newLineupEntry(LineupEntry lineupEntry) async {
     final db = await initialize();
-    await db.insert("lineupEntries", lineupEntry.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert("lineupEntries", lineupEntry.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<void> newLineup(Lineup lineup) async {
     final db = await initialize();
-    await db.insert("lineups", lineup.toMap(),
-        conflictAlgorithm: ConflictAlgorithm.replace);
+    await db.insert("lineups", lineup.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Player>> getPlayers() async {
     final db = await initialize();
-    final List<Map<String, dynamic>> maps =
-        await db.rawQuery("SELECT * FROM players");
+    final List<Map<String, dynamic>> maps = await db.rawQuery("SELECT * FROM players");
     // print(maps);
-    int padLength = 10;
+    // int padLength = 10;
     return List.generate(maps.length, (i) {
-
       Player player = Player(
           id: maps[i]["id"],
           name: maps[i]["name"],
@@ -128,8 +128,7 @@ class dbHelper {
 
   Future<Player> getPlayer(String id) async {
     final db = await initialize();
-    final List<Map<String, dynamic>> maps =
-        await db.query('players', where: "id = ?", whereArgs: [id]);
+    final List<Map<String, dynamic>> maps = await db.query('players', where: "id = ?", whereArgs: [id]);
     List playerList = List.generate(maps.length, (i) {
       return Player(
           id: maps[i]["id"],
@@ -158,8 +157,7 @@ class dbHelper {
 
   Future<List<GameStats>> getGameStats(String gameID) async {
     final db = await initialize();
-    final List<Map<String, dynamic>> maps =
-        await db.query("gameStats", where: "gameID = ?", whereArgs: [gameID]);
+    final List<Map<String, dynamic>> maps = await db.query("gameStats", where: "gameID = ?", whereArgs: [gameID]);
     return List.generate(maps.length, (i) {
       return GameStats(
           gameID: maps[i]["gameID"],
@@ -190,8 +188,8 @@ class dbHelper {
         id: maps[i]["id"],
         name: maps[i]["name"],
         date: maps[i]["date"],
-        teamScore: maps[i]["teamScore"],
-        oppScore: maps[i]["oppScore"],
+        teamPoints: maps[i]["teamPoints"],
+        oppPoints: maps[i]["oppPoints"],
       );
     });
   }
@@ -240,6 +238,7 @@ class dbHelper {
       return Lineup(id: maps[i]["id"], name: maps[i]["name"]);
     });
   }
+
   Future<Lineup> getLineup(String id) async {
     final db = await initialize();
     final List<Map<String, dynamic>> maps = await db.query("lineups", where: "id = ?", whereArgs: [id]);
@@ -261,14 +260,16 @@ class dbHelper {
 
   Future<void> deleteLineupEntry(String lineupID, String playerID) async {
     final db = await initialize();
-    await db.delete('lineupEntries',
-        where: '(lineupID = ? AND playerID = ?) ',
-        whereArgs: [lineupID, playerID]);
+    await db.delete('lineupEntries', where: '(lineupID = ? AND playerID = ?) ', whereArgs: [lineupID, playerID]);
   }
 
   Future<void> deleteGameStats(String id) async {
     final db = await initialize();
     await db.delete('gameStats', where: 'gameID = ?', whereArgs: [id]);
+  }
+  Future<void> deleteGame(String id) async {
+    final db = await initialize();
+    await db.delete('games', where: 'id = ?', whereArgs: [id]);
   }
 }
 

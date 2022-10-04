@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:vbstat/dbHelper.dart';
-import 'package:vbstat/players.dart';
 import 'package:vbstat/lineups.dart';
 import 'package:vbstat/showPlayer.dart';
 import 'databaseClasses.dart';
@@ -35,9 +34,8 @@ class ShowLineupState extends State<ShowLineupPage> {
       actions: [
         TextButton(
             onPressed: () {
-              dbHelper().deleteLineupEntry(lineupID, playerID);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LineupPage()));
+              DBHelper().deleteLineupEntry(lineupID, playerID);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const LineupPage()));
             },
             child: const Text("Delete"))
       ],
@@ -46,10 +44,7 @@ class ShowLineupState extends State<ShowLineupPage> {
   }
 
   void showLineup() {
-    List<Player> players = [];
-    dbHelper().getLineupPlayers(widget.lineup.id).then((value) {
-      List<Player> players = value;
-    });
+    DBHelper().getLineupPlayers(widget.lineup.id).then((value) {});
     // print(players);
   }
 
@@ -61,13 +56,11 @@ class ShowLineupState extends State<ShowLineupPage> {
           leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const LineupPage()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const LineupPage()));
               }),
         ),
         body: Center(
+            child: SingleChildScrollView(
           child: Column(children: [
             const Text(
               "Players",
@@ -75,12 +68,13 @@ class ShowLineupState extends State<ShowLineupPage> {
             ),
             const Divider(),
             FutureBuilder<List>(
-                future: dbHelper().getLineupPlayers(widget.lineup.id),
+                future: DBHelper().getLineupPlayers(widget.lineup.id),
                 builder: (context, snapshot) {
                   // print(snapshot.data);
                   // print(widget.lineup);
                   if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                     return ListView.builder(
+                        physics: const ClampingScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: snapshot.data!.length,
                         itemBuilder: ((context, index) {
@@ -93,46 +87,36 @@ class ShowLineupState extends State<ShowLineupPage> {
                                       snapshot.data![index].id,
                                     ),
                                 onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => ShowPlayerPage(
-                                              player: snapshot.data![index])));
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) => ShowPlayerPage(player: snapshot.data![index])));
                                 },
                                 title: Text(
-                                  "#${snapshot.data![index].number.toString()} | ${snapshot.data![index].name}",style: const TextStyle(fontFeatures: [
-                                    FontFeature.tabularFigures()
-                                  ], fontSize: 20),
-                                  
+                                  "#${snapshot.data![index].number.toString()} | ${snapshot.data![index].name}",
+                                  style: const TextStyle(fontFeatures: [FontFeature.tabularFigures()], fontSize: 20),
                                 ),
-                                subtitle: Text(snapshot.data![index].team,
-                                    style: const TextStyle(fontSize: 20)),
+                                subtitle: Text(snapshot.data![index].team, style: const TextStyle(fontSize: 20)),
                                 leading: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    Text(
-                                        index < 6
-                                            ? (index + 1).toString()
-                                            : "Sub",
-                                        style: const TextStyle(fontSize: 18)),
+                                    Text(index < 6 ? (index + 1).toString() : "Sub", style: const TextStyle(fontSize: 18)),
                                   ],
                                 ),
-                                trailing: Text(snapshot.data![index].position,
-                                    style: const TextStyle(fontSize: 20))),
+                                trailing: Text(snapshot.data![index].position, style: const TextStyle(fontSize: 20))),
                           );
                         }));
                   } else {
                     return Center(
                       child: AlertDialog(
                         backgroundColor: const Color(0x997a7a7a),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        content: const Text(
-                            "There are no lineups available, try adding a new one!"),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                        content: const Text("There are no lineups available, try adding a new one!"),
                       ),
                     );
                   }
                 })
+          ]),
+        )
+
             // ListView.builder(
             //   itemCount: widget.roster,
             //   itemBuilder: (BuildContext context, int index) {
@@ -141,7 +125,6 @@ class ShowLineupState extends State<ShowLineupPage> {
             //     );
             //   },
             // )
-          ]),
-        ));
+            ));
   }
 }

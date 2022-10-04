@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:vbstat/main.dart';
+import 'package:vbstat/playedGames.dart';
 
 class GamePage extends StatefulWidget {
   const GamePage({Key? key}) : super(key: key);
@@ -10,10 +10,6 @@ class GamePage extends StatefulWidget {
 }
 
 class GamePageState extends State<GamePage> {
-
-  void saveGame() {
-
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +23,7 @@ class GamePageState extends State<GamePage> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => const MyHomePage(title: "Home")));
+                        builder: (context) => const PlayedGamesPage()));
               }),
         ),
     );

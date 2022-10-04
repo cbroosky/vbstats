@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:vbstat/newPlayer.dart';
 import 'selectPlayers.dart';
 
 class NewLineupPage extends StatefulWidget {
@@ -51,12 +50,11 @@ class NewLineupPageState extends State<NewLineupPage> {
                                   name: nameController.text,
                                 )));
                   },
-                  child: Text("Next"))
+                  child: const Text("Next"))
             ],
           ),
         ),
       ),
     );
-    // TODO: implement build
   }
 }

@@ -1,8 +1,5 @@
-import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:vbstat/dbHelper.dart';
-import 'package:vbstat/players.dart';
 import 'databaseClasses.dart';
 
 var player;
@@ -32,7 +29,7 @@ class ShowPlayerState extends State<ShowPlayerPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text("Player " + widget.player.name),
+          title: Text("Player ${widget.player.name}"),
           // leading: IconButton(
           //     icon: const Icon(Icons.arrow_back),
           //     onPressed: () {

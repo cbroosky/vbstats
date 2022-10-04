@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:vbstat/main.dart';
 import 'package:vbstat/showLineup.dart';
 import 'dbHelper.dart';
-import 'databaseClasses.dart';
 import 'newLineup.dart';
 
 bool editing = false;
@@ -33,14 +32,12 @@ class LineupState extends State {
   void deleteDialog(BuildContext context, String id) {
     var alert = AlertDialog(
       title: const Text("Delete Lineup?"),
-      content: const Text(
-          "If you select delete then you will remove this lineup and its data! Do you want to continue?"),
+      content: const Text("If you select delete then you will remove this lineup and its data! Do you want to continue?"),
       actions: [
         TextButton(
             onPressed: () {
-              dbHelper().deleteLineup(id);
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => const LineupPage()));
+              DBHelper().deleteLineup(id);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const LineupPage()));
             },
             child: const Text("Delete"))
       ],
@@ -50,25 +47,18 @@ class LineupState extends State {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Scaffold(
         floatingActionButton: FloatingActionButton(
             child: const Icon(Icons.add),
             onPressed: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const NewLineupPage()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const NewLineupPage()));
             }),
         appBar: AppBar(
           title: const Text("Lineups"),
           leading: IconButton(
               icon: const Icon(Icons.arrow_back),
               onPressed: () {
-                Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const MyHomePage(title: "Home")));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage(title: "Home")));
               }),
           // actions: [
           // IconButton(
@@ -94,7 +84,7 @@ class LineupState extends State {
             ),
             const Padding(padding: EdgeInsets.all(1)),
             FutureBuilder<List>(
-              future: dbHelper().getLineups(),
+              future: DBHelper().getLineups(),
               builder: (context, snapshot) {
                 if (snapshot.data != null && snapshot.data!.isNotEmpty) {
                   return ListView.builder(
@@ -104,18 +94,14 @@ class LineupState extends State {
                         return Card(
                             // shadowColor: Colors.grey.shade300,
                             child: ListTile(
-                          onLongPress: () =>
-                              deleteDialog(context, snapshot.data![index].id),
+                          onLongPress: () => deleteDialog(context, snapshot.data![index].id),
                           title: Text(
                             snapshot.data![index].name,
                             style: const TextStyle(fontSize: 24),
                           ),
                           onTap: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ShowLineupPage(
-                                        lineup: snapshot.data![index])));
+                                context, MaterialPageRoute(builder: (context) => ShowLineupPage(lineup: snapshot.data![index])));
                           },
                         ));
                       }));
@@ -123,10 +109,8 @@ class LineupState extends State {
                   return Center(
                     child: AlertDialog(
                       backgroundColor: const Color(0x997a7a7a),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      content: const Text(
-                          "There are no lineups available, try adding a new one!"),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      content: const Text("There are no lineups available, try adding a new one!"),
                     ),
                   );
                 }

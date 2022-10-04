@@ -1,9 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
 import 'package:vbstat/players.dart';
-import 'package:vbstat/lineups.dart';
 import 'databaseClasses.dart';
 import 'dbHelper.dart';
 
@@ -25,14 +21,13 @@ class NewPlayerPageState extends State<NewPlayerPage> {
 
   void savePlayerInfo() {
     Player newPlayer = Player(
-        id: dbHelper().generateID(),
+        id: DBHelper().generateID(),
         name: nameController.text,
         number: int.tryParse(numberController.text) ?? 999,
         position: positionSelection,
-        team: teamNames[teamSelection]
-        );
+        team: teamNames[teamSelection]);
     // print("New Player: " + newPlayer.toString());
-    dbHelper().newPlayer(newPlayer);
+    DBHelper().newPlayer(newPlayer);
   }
 
   @override
@@ -47,10 +42,7 @@ class NewPlayerPageState extends State<NewPlayerPage> {
           child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             const Text(
               "Player Data",
-              style: TextStyle(
-                  fontSize: 36,
-                  fontWeight: FontWeight.bold,
-                  decoration: TextDecoration.underline),
+              style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold, decoration: TextDecoration.underline),
             ),
             const Padding(padding: EdgeInsets.only(top: 50)),
             Row(
@@ -74,8 +66,7 @@ class NewPlayerPageState extends State<NewPlayerPage> {
                     child: TextField(
                       controller: nameController,
                       autofocus: true,
-                      decoration:
-                          const InputDecoration(hintText: "Player Name"),
+                      decoration: const InputDecoration(hintText: "Player Name"),
                     ),
                   )
                 ])
@@ -86,14 +77,12 @@ class NewPlayerPageState extends State<NewPlayerPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: const [
-                      Text(
-                        "Shirt Number",
-                        style: TextStyle(fontSize: 20),
-                      ),
-                    ]),
+                Column(crossAxisAlignment: CrossAxisAlignment.end, children: const [
+                  Text(
+                    "Shirt Number",
+                    style: TextStyle(fontSize: 20),
+                  ),
+                ]),
                 const Padding(padding: EdgeInsets.only(left: 15, top: 25)),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
                   SizedBox(
@@ -103,8 +92,7 @@ class NewPlayerPageState extends State<NewPlayerPage> {
                       keyboardType: TextInputType.number,
                       controller: numberController,
                       autofocus: true,
-                      decoration:
-                          const InputDecoration(hintText: "Player Number"),
+                      decoration: const InputDecoration(hintText: "Player Number"),
                     ),
                   )
                 ]),
@@ -141,12 +129,10 @@ class NewPlayerPageState extends State<NewPlayerPage> {
                         'Defensive Specialist',
                         'Serving Specialist'
                       ].map<DropdownMenuItem<String>>((String value) {
-                        return DropdownMenuItem<String>(
-                            value: value, child: Text(value));
+                        return DropdownMenuItem<String>(value: value, child: Text(value));
                       }).toList(),
                       onChanged: (selection) => {
-                        setState(
-                            () => {positionSelection = selection ?? "Select"})
+                        setState(() => {positionSelection = selection ?? "Select"})
                       },
                     )
                   ],
@@ -186,11 +172,10 @@ class NewPlayerPageState extends State<NewPlayerPage> {
                   children: [
                     DropdownButton<int>(
                       value: teamSelection,
-                      items: [
-                        DropdownMenuItem(child: const Text("Varsity"), value: 0),
-                        DropdownMenuItem(
-                            child: const Text("Junior Varsity"), value: 1),
-                        DropdownMenuItem(child: const Text("C Team"), value: 2),
+                      items: const [
+                        DropdownMenuItem(value: 0, child: Text("Varsity")),
+                        DropdownMenuItem(value: 1, child: Text("Junior Varsity")),
+                        DropdownMenuItem(value: 2, child: Text("C Team")),
                       ],
                       onChanged: (selection) => {
                         setState(() => {teamSelection = selection ?? 0})
@@ -215,10 +200,7 @@ class NewPlayerPageState extends State<NewPlayerPage> {
             ElevatedButton(
                 onPressed: () {
                   savePlayerInfo();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const PlayerPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PlayerPage()));
                 },
                 child: const Text("Save"))
           ]),

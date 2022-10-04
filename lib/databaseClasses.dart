@@ -123,8 +123,7 @@ class LineupEntry {
   final String playerID;
   final int rotation;
 
-  const LineupEntry(
-      {required this.lineupID, required this.playerID, required this.rotation});
+  const LineupEntry({required this.lineupID, required this.playerID, required this.rotation});
 
   Map<String, dynamic> toMap() {
     return {
@@ -203,24 +202,19 @@ class GameStats {
 class Game {
   final String id;
   final String name;
-  final DateTime date;
-  final int teamScore;
-  final int oppScore;
+  final int date;
+  final int teamPoints;
+  final int oppPoints;
 
-  Game(
-      {required this.id,
-      required this.name,
-      required this.date,
-      this.teamScore = 0,
-      this.oppScore = 0});
+  Game({required this.id, required this.name, required this.date, this.teamPoints = 0, this.oppPoints = 0});
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
       'name': name,
       'date': date,
-      'teamScore': teamScore,
-      'oppScore': oppScore,
+      'teamPoints': teamPoints,
+      'oppPoints': oppPoints,
     };
   }
 }
