@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vbstat/dbHelper.dart';
 import 'package:vbstat/game.dart';
 import 'package:vbstat/lineups.dart';
@@ -34,6 +35,7 @@ class PlayedGamesState extends State<PlayedGamesPage> {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     return Scaffold(
         floatingActionButton: FloatingActionButton(
             onPressed: () {
@@ -48,10 +50,10 @@ class PlayedGamesState extends State<PlayedGamesPage> {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage(title: "Home")));
               }),
         ),
-        body: Center(
-          child: ListView(children: [
-            Column(
-              children: [
+        body: SingleChildScrollView(
+          child: Column(children: [
+            // ListView(
+            //   children: [
                 const Card(
                   elevation: 2,
                   child: ListTile(
@@ -76,11 +78,12 @@ class PlayedGamesState extends State<PlayedGamesPage> {
                                 child: ListTile(
                               onLongPress: () => deleteDialog(context, snapshot.data![index].id),
                               title: Text(
-                                snapshot.data![index].name,
+                                snapshot.data![index].teamName,
                                 style: const TextStyle(fontSize: 24),
                               ),
                               onTap: () {
-                                Navigator.push(context, MaterialPageRoute(builder: (context) => const GamePage()));
+                                Navigator.push(
+                                    context, MaterialPageRoute(builder: (context) => GamePage(game: snapshot.data![index])));
                               },
                             ));
                           }));
@@ -96,8 +99,8 @@ class PlayedGamesState extends State<PlayedGamesPage> {
                   },
                 )
               ],
-            )
-          ]
+          //   )
+          // ]
               // )
               ),
         ));

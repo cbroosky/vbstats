@@ -14,10 +14,12 @@ class NewGamePage extends StatefulWidget {
 }
 
 class NewGameState extends State<NewGamePage> {
-  TextEditingController nameController = TextEditingController();
+  TextEditingController teamController = TextEditingController();
+  TextEditingController oppController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
+    // DBHelper().alterGameTable();
     return Scaffold(
         appBar: AppBar(title: const Text("New Game")),
         body: Center(
@@ -33,7 +35,7 @@ class NewGameState extends State<NewGamePage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 const Text(
-                  "Name",
+                  "Team Name",
                   style: TextStyle(fontSize: 20),
                 ),
                 const Padding(padding: EdgeInsets.only(left: 15, top: 25)),
@@ -41,9 +43,30 @@ class NewGameState extends State<NewGamePage> {
                   width: 150,
                   height: 30,
                   child: TextField(
-                    controller: nameController,
+                    controller: teamController,
                     autofocus: true,
-                    decoration: const InputDecoration(hintText: "Game Name"),
+                    decoration: const InputDecoration(hintText: "Team Name"),
+                  ),
+                )
+              ],
+            ),
+            const Padding(padding: EdgeInsets.only(top: 10)),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  "Opponent Name",
+                  style: TextStyle(fontSize: 20),
+                ),
+                const Padding(padding: EdgeInsets.only(left: 15, top: 25)),
+                SizedBox(
+                  width: 150,
+                  height: 30,
+                  child: TextField(
+                    controller: oppController,
+                    autofocus: true,
+                    decoration: const InputDecoration(hintText: "Opponent Name"),
                   ),
                 )
               ],
@@ -99,7 +122,7 @@ class NewGameState extends State<NewGamePage> {
                   // DateTime now = DateTime.now();
                   // DateTime date = DateTime(now.year, now.month, now.day);
                   int millisSinceEpoch = DateTime.now().millisecondsSinceEpoch;
-                  Game newGame = Game(id: lineupSelection, name: nameController.text, date: millisSinceEpoch);
+                  Game newGame = Game(id: "", lineupId: lineupSelection, teamName: teamController.text, oppName: oppController.text, date: millisSinceEpoch);
 
                   Navigator.push(
                       context,

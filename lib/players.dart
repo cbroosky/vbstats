@@ -45,8 +45,7 @@ class PlayerPageState extends State {
                 Navigator.push(context, MaterialPageRoute(builder: (context) => const MyHomePage(title: "Home")));
               }),
         ),
-        body: Center(
-            child: SingleChildScrollView(
+        body: SingleChildScrollView(
                 child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
@@ -103,6 +102,6 @@ class PlayerPageState extends State {
           ],
         ))
             // )
-            ));
+            );
   }
 }

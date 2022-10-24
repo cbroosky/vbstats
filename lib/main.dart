@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:vbstat/playedGames.dart';
 import 'lineups.dart';
 import 'players.dart';
@@ -32,7 +33,19 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
+  void initState() {
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+    ]);
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
+    // SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(icon: const Icon(Icons.home), onPressed: () {}),
@@ -51,10 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const PlayerPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PlayerPage()));
                 },
               ),
             ),
@@ -68,10 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LineupPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const LineupPage()));
                 },
               ),
             ),
@@ -85,10 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const PlayedGamesPage()));
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PlayedGamesPage()));
                 },
               ),
             ),
