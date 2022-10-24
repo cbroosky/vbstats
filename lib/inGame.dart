@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:vbstat/databaseClasses.dart';
 import 'package:vbstat/dbHelper.dart';
-import 'package:vbstat/playedGames.dart';
-import 'package:vbstat/showPlayer.dart';
+import 'playedGames.dart';
+// import 'package:vbstat/playedGames.dart';
 
 import 'actions.dart';
 
@@ -18,18 +18,14 @@ class InGamePage extends StatefulWidget {
 class InGamePageState extends State<InGamePage> {
   int teamPoints = 0;
   int oppPoints = 0;
-  List<Player> playersPlaying = [];
-  List<Player> availableSubs = [];
+  Set<Player> playersPlaying = {};
+  Set<Player> availableSubs = {};
 
   TextStyle general = const TextStyle(
     fontSize: 24,
   );
-  TextStyle large = const TextStyle(
-    fontSize: 42,
-  );
-  TextStyle buttonStyle = const TextStyle(
-    fontSize: 24,
-  );
+  TextStyle large = const TextStyle(fontSize: 42, color: Colors.white);
+  TextStyle buttonStyle = const TextStyle(fontSize: 36, color: Colors.white);
   // ButtonStyle pointStyle = ButtonStyle(
   //   textStyle: ,
   // );
@@ -83,9 +79,11 @@ class InGamePageState extends State<InGamePage> {
     ]
   };
 
-  List<Row> playerDisplay() {
-    List<Row> rows = [];
-    DBHelper().getLineupPlayers(widget.game.id).then((value) {
+  List<Widget> playerDisplay() {
+    List<Widget> playerRows = [];
+
+    DBHelper().getLineupPlayers(widget.game.lineupId).then((List<Player> value) {
+      print('running get lineup.then');
       int index = 0;
       for (Player player in value) {
         if (index < 6) {
@@ -95,57 +93,108 @@ class InGamePageState extends State<InGamePage> {
         }
         index += 1;
       }
-    });
-    for (int i = 0; i < 3; i++) {
-      List<Flexible> rowItems = [];
-      for (int j = 0; j < 2; j++) {
+      for (int i = 0; i < 3; i++) {
+        List<Flexible> rowItems = [];
         rowItems.add(Flexible(
             fit: FlexFit.tight,
             child: DragTarget<StatAction>(onWillAccept: (data) {
               return true;
             }, onAccept: (data) {
-              PlayerStat newAction = PlayerStat(playerID: playersPlaying[i + j].id, statAction: data);
+              PlayerStat newAction = PlayerStat(playerID: playersPlaying.elementAt(i).id, statAction: data);
               if (data.scoreAdjustment == 1) {
                 teamPoints += 1;
               } else if (data.scoreAdjustment == -1) {
                 oppPoints += 1;
               }
               actions.add(newAction);
-              setState(() {
-                // ScaffoldMessenger.of(context).showSnackBar(
-                //   SnackBar(
-                //     duration: const Duration(milliseconds: 750),
-                //     shape: const RoundedRectangleBorder(
-                //         borderRadius: BorderRadius.all(Radius.circular(10))),
-                //     content: Text(snapshot.data![index].name + ": +1 " + data.name),
-                //   ),
-                // );
-              });
+              setState(() {});
+              // setState(() {
+              //    ScaffoldMessenger.of(context).showSnackBar(
+              //      SnackBar(
+              //        duration: const Duration(milliseconds: 750),
+              //        shape: const RoundedRectangleBorder(
+              //            borderRadius: BorderRadius.all(Radius.circular(10))),
+              //        content: Text(snapshot.data![index].name + ": +1 " + data.name),
+              //      ),
+              //    );
+              // });
             }, builder: (context, candidateData, rejectedData) {
-              if ((i + j) < 6) {
-                return SizedBox(
-                  height: (MediaQuery.of(context).size.height - 70) / 3,
-                  child: Card(
-                    color: const Color(0x9900E5FF),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5),
-                        child: Center(
-                            child: Text(
-                          playersPlaying[i + j].name,
-                          style: buttonStyle,
+              return GestureDetector(
+                  onTap: () {
+                    print(playersPlaying.elementAt(i + 3).id);
+                    print("Hello World");
+                  },
+                  onDoubleTap: () {
+                    print("TEst");
+                  },
+                  child: SizedBox(
+                    height: (MediaQuery.of(context).size.height - 70) / 3,
+                    child: Container(
+                        decoration: BoxDecoration(color: const Color(0x9900E5FF), borderRadius: BorderRadius.circular(5)),
+                        margin: const EdgeInsets.all(2),
+                        child: Padding(
+                          padding: const EdgeInsets.all(1),
+                          child: Center(
+                              child: Text(
+                            playersPlaying.elementAt(i).name,
+                            style: const TextStyle(fontSize: 28, color: Colors.white),
+                          )),
                         )),
-                      )),
-                );
-              } else {
-                return Container();
-              }
+                  ));
             })));
+        rowItems.add(Flexible(
+            fit: FlexFit.tight,
+            child: DragTarget<StatAction>(onWillAccept: (data) {
+              return true;
+            }, onAccept: (data) {
+              PlayerStat newAction = PlayerStat(playerID: playersPlaying.elementAt(i + 3).id, statAction: data);
+              if (data.scoreAdjustment == 1) {
+                teamPoints += 1;
+              } else if (data.scoreAdjustment == -1) {
+                oppPoints += 1;
+              }
+              actions.add(newAction);
+              setState(() {});
+              // setState(() {
+              //    ScaffoldMessenger.of(context).showSnackBar(
+              //      SnackBar(
+              //        duration: const Duration(milliseconds: 750),
+              //        shape: const RoundedRectangleBorder(
+              //            borderRadius: BorderRadius.all(Radius.circular(10))),
+              //        content: Text(snapshot.data![index].name + ": +1 " + data.name),
+              //      ),
+              //    );
+              // });
+            }, builder: (context, candidateData, rejectedData) {
+              return InkWell(
+                  onTap: () {
+                    print(playersPlaying.elementAt(i + 3).id);
+                    print("Hello World");
+                  },
+                  
+                  child: SizedBox(
+                      height: (MediaQuery.of(context).size.height - 70) / 3,
+                      child: Container(
+                        decoration: BoxDecoration(color: const Color(0x9900E5FF), borderRadius: BorderRadius.circular(5)),
+                        margin: const EdgeInsets.all(2),
+                        child: Padding(
+                          padding: const EdgeInsets.all(1),
+                          child: Center(
+                              child: Text(
+                            playersPlaying.elementAt(i + 3).name,
+                            style: const TextStyle(fontSize: 28, color: Colors.white),
+                          )),
+                        ),
+                      )));
+            })));
+        playerRows.add(Row(
+          children: rowItems,
+        ));
       }
-      rows.add(Row(
-        children: rowItems,
-      ));
-    }
-    return rows;
+      setState(() {});
+    });
+
+    return playerRows;
   }
 
   List<Widget> buttonDisplay() {
@@ -162,27 +211,27 @@ class InGamePageState extends State<InGamePage> {
               feedback: SizedBox(
                   height: (MediaQuery.of(context).size.height - 70) / actionList.length,
                   child: Card(
+                      color: const Color(0xFFFF6D00),
                       child: Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Center(
-                        child: Text(
-                      action.name,
-                      style: buttonStyle,
-                    )),
-                  ))),
+                        padding: const EdgeInsets.all(5),
+                        child: Center(
+                            child: Text(
+                          action.name,
+                          style: buttonStyle,
+                        )),
+                      ))),
               child: SizedBox(
                   height: (MediaQuery.of(context).size.height - 70) / actionList.length,
                   child: Card(
                       color: const Color(0xFFFF6D00),
-
                       child: Padding(
-                    padding: const EdgeInsets.all(5),
-                    child: Center(
-                        child: Text(
-                      action.name,
-                      style: buttonStyle,
-                    )),
-                  )))),
+                        padding: const EdgeInsets.all(5),
+                        child: Center(
+                            child: Text(
+                          action.name,
+                          style: buttonStyle,
+                        )),
+                      )))),
         ));
       }
       Row newRow = Row(mainAxisSize: MainAxisSize.min, children: buttons);
@@ -192,12 +241,42 @@ class InGamePageState extends State<InGamePage> {
     return rows;
   }
 
+  List<Widget> players = [];
+
+  @override
+  void initState() {
+    players = playerDisplay();
+
+    super.initState();
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+  }
+
+// Step 3
+  @override
+  dispose() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeRight,
+      DeviceOrientation.landscapeLeft,
+    ]);
+    super.dispose();
+  }
+
   void saveGame() {
     // DBHelper().alterGameTable();
     String gameID = DBHelper().generateID();
-    DBHelper()
-        .newGame(Game(id: gameID, name: widget.game.name, date: widget.game.date, teamPoints: teamPoints, oppPoints: oppPoints));
-// TODO complete all actions and then save info
+    DBHelper().newGame(Game(
+        id: gameID,
+        lineupId: widget.game.lineupId,
+        teamName: widget.game.teamName,
+        oppName: widget.game.oppName,
+        date: widget.game.date,
+        teamPoints: teamPoints,
+        oppPoints: oppPoints));
     Set<String> playerIDs = {};
     if (actions.isNotEmpty) {
       for (PlayerStat pStat in actions) {
@@ -226,7 +305,13 @@ class InGamePageState extends State<InGamePage> {
   // };
   @override
   Widget build(BuildContext context) {
-    if (MediaQuery.of(context).size.width < 1000) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+
+    var screenWidth = MediaQuery.of(context).size.width;
+    if (screenWidth < 1000) {
       general = const TextStyle(
         fontSize: 16,
       );
@@ -236,9 +321,18 @@ class InGamePageState extends State<InGamePage> {
       buttonStyle = const TextStyle(
         fontSize: 14,
       );
+    } else if (screenWidth > 1200) {
+      general = const TextStyle(
+        fontSize: 36,
+      );
+      large = const TextStyle(
+        fontSize: 42,
+      );
+      buttonStyle = const TextStyle(
+        fontSize: 26,
+      );
     }
 
-    SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
     return Scaffold(
         // list of images for scrolling
         // body: SingleChildScrollView(
@@ -252,7 +346,7 @@ class InGamePageState extends State<InGamePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        "Home Team |",
+                        "${widget.game.teamName} |",
                         style: general,
                       ),
                       TextButton(
@@ -294,7 +388,7 @@ class InGamePageState extends State<InGamePage> {
                               // );
                             }
                           },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.undo_rounded,
                             // size: large.fontSize
                           )),
@@ -310,7 +404,7 @@ class InGamePageState extends State<InGamePage> {
                         child: Text(oppPoints.toString()),
                       ),
                       Text(
-                        "| Away Team  ",
+                        "| ${widget.game.oppName}",
                         style: general,
                       ),
                     ],
@@ -326,7 +420,7 @@ class InGamePageState extends State<InGamePage> {
                         child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: playerDisplay()
+                            children: players
                             // FutureBuilder<List>(
                             //   future: DBHelper().getLineupPlayers(widget.game.id),
                             //   builder: (context, snapshot) {
@@ -425,7 +519,7 @@ class InGamePageState extends State<InGamePage> {
               ],
             ),
             headerSliverBuilder: (context, innerBoxIsScrolled) => [
-                  SliverAppBar(title: Text(widget.game.name), actions: [
+                  SliverAppBar(title: Text(widget.game.teamName), actions: [
                     // IconButton(
                     //     onPressed: () {
                     //       String action = undoAction();

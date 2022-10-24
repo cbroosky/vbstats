@@ -24,7 +24,7 @@ class DBHelper {
             "CREATE TABLE gameStats(gameID TEXT, playerID INTEGER, serveAtt INTEGER, serveErr INTEGER, aces INTEGER, dig INTEGER, digErr INTEGER, pass INTEGER, passErr INTEGER, killAtt INTEGER, kill INTEGER, killErr INTEGER, assists INTEGER, assistsErr INTEGER, blockAtt INTEGER, block INTEGER, blockErr INTEGER); ");
         print("Created GameStats Table!");
 
-        await db.execute("CREATE TABLE games(id TEXT, name TEXT, date INTEGER, teamPoints INTEGER, oppPoints INTEGER); ");
+        await db.execute("CREATE TABLE games(id TEXT, lineupId TEXT, teamName TEXT, oppName TEXT, date INTEGER, teamPoints INTEGER, oppPoints INTEGER); ");
         print("Created Games Table!");
 
         await db.execute("CREATE TABLE lineups(id TEXT, name TEXT PRIMARY KEY);");
@@ -59,7 +59,9 @@ class DBHelper {
   Future<void> alterGameTable() async {
     final db = await initialize();
     // print("Saving new player");
-    await db.execute("ALTER TABLE games ALTER COLUMN date INTEGER;");
+    
+    await db.execute("ALTER TABLE games ADD COLUMN teamName TEXT;");
+    await db.execute("ALTER TABLE games ADD COLUMN oppName TEXT;");
   }
 
   Future<void> newPlayer(Player player) async {
@@ -155,9 +157,9 @@ class DBHelper {
     return playerList[0];
   }
 
-  Future<List<GameStats>> getGameStats(String gameID) async {
+  Future<List<GameStats>> getGameStats(String gameID, String orderBy) async {
     final db = await initialize();
-    final List<Map<String, dynamic>> maps = await db.query("gameStats", where: "gameID = ?", whereArgs: [gameID]);
+    final List<Map<String, dynamic>> maps = await db.rawQuery("SELECT * FROM gameStats WHERE gameID = '$gameID' ORDER by $orderBy DESC");
     return List.generate(maps.length, (i) {
       return GameStats(
           gameID: maps[i]["gameID"],
@@ -186,7 +188,9 @@ class DBHelper {
     return List.generate(maps.length, (i) {
       return Game(
         id: maps[i]["id"],
-        name: maps[i]["name"],
+        lineupId: maps[i]["lineupId"],
+        teamName: maps[i]["teamName"],
+        oppName: maps[i]["oppName"],
         date: maps[i]["date"],
         teamPoints: maps[i]["teamPoints"],
         oppPoints: maps[i]["oppPoints"],
@@ -267,6 +271,7 @@ class DBHelper {
     final db = await initialize();
     await db.delete('gameStats', where: 'gameID = ?', whereArgs: [id]);
   }
+
   Future<void> deleteGame(String id) async {
     final db = await initialize();
     await db.delete('games', where: 'id = ?', whereArgs: [id]);

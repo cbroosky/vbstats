@@ -52,27 +52,29 @@ class Player {
 
   @override
   String toString() {
-    return """ID: $id,
-    Name: $name,
-    Number: $number,
-    Position: $position,
-    Team: $team,
-    Serve Attempts: $serveAtt,
-    Serve Errors: $serveErr,
-    Aces: $aces,
-    Digs: $dig,
-    Dig Errors: $digErr,
-    Passes: $pass,
-    Pass Errors: $passErr,
-    Kill Attempts: $killAtt,
-    Kills: $kill,
-    Kill Errors: $killErr,
-    Assists: $assists,
-    Assist Errors: $assistErr,
-    Block Attempts: $blockAtt,
-    Blocks: $block,
-    Block Errors: $blockErr
-    """;
+    return """
+ID: $id,
+Name: $name,
+Number: $number,
+Position: $position,
+Team: $team,
+Serve Attempts: $serveAtt,
+Serve Errors: $serveErr,
+Aces: $aces,
+Digs: $dig,
+Dig Errors: $digErr,
+Passes: $pass,
+Pass Errors: $passErr,
+Kill Attempts: $killAtt,
+Kills: $kill,
+Kill Errors: $killErr,
+Assists: $assists,
+Assist Errors: $assistErr,
+Block Attempts: $blockAtt,
+Blocks: $block,
+Block Errors: $blockErr,
+
+""";
   }
 
   Map<String, dynamic> toMap() {
@@ -179,6 +181,7 @@ class GameStats {
 
   Map<String, dynamic> toMap() {
     return {
+      'gameID': gameID,
       'playerID': playerID,
       'serveAtt': serveAtt,
       'serveErr': serveErr,
@@ -201,17 +204,28 @@ class GameStats {
 
 class Game {
   final String id;
-  final String name;
+  final String lineupId;
+  final String teamName;
+  final String oppName;
   final int date;
   final int teamPoints;
   final int oppPoints;
 
-  Game({required this.id, required this.name, required this.date, this.teamPoints = 0, this.oppPoints = 0});
+  Game(
+      {required this.id,
+      required this.lineupId,
+      required this.teamName,
+      required this.oppName,
+      required this.date,
+      this.teamPoints = 0,
+      this.oppPoints = 0});
 
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'name': name,
+      'lineupId': lineupId,
+      'teamName': teamName,
+      'oppName': oppName,
       'date': date,
       'teamPoints': teamPoints,
       'oppPoints': oppPoints,
